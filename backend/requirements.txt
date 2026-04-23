@@ -1,3 +1,49 @@
-fastapi==0.115.0
-uvicorn[standard]==0.30.6
+
+# FastAPI web API + ASGI server
+fastapi==0.110.0
+uvicorn==0.27.1
+
+# Uploads + static/temp file handling
 python-multipart==0.0.9
+aiofiles==23.2.1
+
+# Outbound HTTP calls (model downloads, external checks)
+httpx==0.27.0
+
+# PyTorch CPU-only inference (no CUDA)
+torch==2.2.0
+torchvision==0.17.0
+
+# Vision model zoo (EfficientNet-B4 via timm)
+timm==0.9.12
+
+# Face detection / alignment (MTCNN)
+facenet-pytorch==2.5.3
+
+# Video/image processing (headless for Docker)
+opencv-python-headless==4.9.0.80
+
+# Core numeric + image utilities
+Pillow==10.2.0
+numpy==1.26.4
+scipy==1.12.0
+
+# Audio analysis + decoding
+librosa==0.10.1
+soundfile==0.12.1
+
+# Audio model inference (e.g., Wav2Vec2)
+transformers==4.38.0
+
+# EXIF metadata parsing
+exifread==3.0.0
+
+# PDF report generation
+reportlab==4.1.0
+
+# Disinformation / relationship graph utilities
+networkx==3.2.1
+
+# File type validation (MIME sniffing)
+python-magic==0.4.27
+>>>>>>> 28c2acc (Initial Veridex file setup and image detector updated)
