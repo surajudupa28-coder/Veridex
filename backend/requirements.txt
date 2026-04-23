@@ -46,4 +46,3 @@ networkx==3.2.1
 
 # File type validation (MIME sniffing)
 python-magic==0.4.27
->>>>>>> 28c2acc (Initial Veridex file setup and image detector updated)
