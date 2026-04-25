@@ -24,7 +24,39 @@ venv/
 *.pth
 models/
 
-# Images (optional but recommended)
-*.png
-*.jpg
-*.jpeg
+# Images and media in data dir
+data/*.png
+data/*.jpg
+data/*.jpeg
+data/*.mp4
+data/*.webp
+
+# Environment variables (NEVER push API keys)
+.env
+.env.*
+
+# Docker
+*.log
+
+# Video/audio files (user uploads)
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.mp3
+*.wav
+*.webp
+
+# WeasyPrint / PDF temp files
+*.pdf
+
+# HuggingFace model cache (can be huge)
+backend/models/
+.cache/
+
+
+# Python build artifacts
+*.egg-info/
+dist/
+build/

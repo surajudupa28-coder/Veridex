@@ -32,6 +32,9 @@ def aggregate_image_result(image_result: Dict[str, Any], metadata_result: Dict[s
     Returns:
         Aggregated verdict dictionary with weighted confidence and component breakdown.
     """
+    image_result = image_result or {"score": 0.0, "flags": [], "method": "unknown"}
+    metadata_result = metadata_result or {"score": 0.0, "flags": [], "method": "exif"}
+
     neural_score = image_result.get("raw_scores", {}).get("face_score", 0.5) / 100
     gan_score = image_result.get("raw_scores", {}).get("gan_score", 0.0)
     metadata_score = metadata_result.get("score", 0.0)
@@ -75,6 +78,10 @@ def aggregate_video_result(
     Returns:
         Aggregated verdict dictionary with weighted confidence and component breakdown.
     """
+    video_result = video_result or {"score": 0.0, "flags": [], "method": "unknown"}
+    audio_result = audio_result or {"score": 0.0, "flags": [], "method": "unknown"}
+    metadata_result = metadata_result or {"score": 0.0, "flags": [], "method": "exif"}
+
     neural_score = video_result.get("confidence", 0.0) / 100
 
     raw_gan_scores = video_result.get("raw_gan_scores", [0.0])

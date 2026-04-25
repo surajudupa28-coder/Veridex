@@ -15,9 +15,10 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 from fastapi import FastAPI, UploadFile, File, BackgroundTasks, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import Response, JSONResponse
+from fastapi.responses import HTMLResponse, Response, JSONResponse
 from graph.disinfo_graph import build_disinfo_graph
-from report_generator import generate_threat_report
+from report.report_generator import generate_report
+from report.html_template import render_report_html
 
 import aiofiles
 
@@ -84,10 +85,13 @@ async def run_full_analysis(job_id: str, file_path: str, file_ext: str):
 
         jobs[job_id]["status"] = "completed"
         jobs[job_id]["report"] = result
-        jobs[job_id]["threat_report"] = generate_threat_report(result)   
+        jobs[job_id]["threat_report"] = generate_report(result)   
         jobs[job_id]["completed_at"] = time.time()
         jobs[job_id].pop("progress", None)
     except Exception as e:
+        import traceback
+        traceback.print_exc()
+        print(f"[PIPELINE ERROR] job {job_id} failed: {e}")
         jobs[job_id]["status"] = "failed"
         jobs[job_id]["error"] = str(e)
         jobs[job_id].pop("progress", None)
@@ -157,6 +161,49 @@ def get_status(job_id: str):
     return resp
 
 
+@app.get("/report/{job_id}/html")
+async def export_html(job_id: str):
+    job = jobs.get(job_id)
+    if not job or job["status"] != "completed":
+        raise HTTPException(status_code=404, detail="Job not found or not completed")
+    report = generate_report(job["report"], job.get("graph"))
+    html = render_report_html(report)
+    return HTMLResponse(
+        content=html,
+        headers={
+            "Content-Disposition": f'attachment; filename="veridex_report_{job_id[:8]}.html"'
+        }
+    )
+
+@app.get("/report/{job_id}/pdf")
+async def export_pdf(job_id: str):
+    job = jobs.get(job_id)
+    if not job or job["status"] != "completed":
+        raise HTTPException(status_code=404, detail="Job not found or not completed")
+    report = generate_report(job["report"], job.get("graph"))
+    html = render_report_html(report)
+    try:
+        import weasyprint
+        pdf_bytes = weasyprint.HTML(string=html).write_pdf()
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f'attachment; filename="veridex_{job_id[:8]}.pdf"'
+            }
+        )
+    except ImportError:
+        # weasyprint not available — return HTML as fallback
+        return HTMLResponse(
+            content=html,
+            headers={
+                "Content-Disposition": f'attachment; filename="veridex_report_{job_id[:8]}.html"'
+            }
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"PDF generation failed: {str(e)}")
+
+
 @app.get("/report/{job_id}")
 def get_report(job_id: str):
     """
@@ -182,56 +229,6 @@ def get_report(job_id: str):
     "threat_report": job.get("threat_report")
     }
 
-
-@app.get("/report/{job_id}/pdf")
-def get_report_pdf(job_id: str):
-    """
-    Generate and return a PDF report for the job.
-    """
-
-    job = jobs.get(job_id)
-
-    if not job:
-        raise HTTPException(status_code=404, detail="Job not found.")
-
-    if job["status"] != "completed":
-        return JSONResponse(
-            status_code=202,
-            content={"message": "Job is not yet completed.", "status": job["status"]},
-        )
-
-    if "report" not in job:
-        return JSONResponse(
-            status_code=500,
-            content={"message": "Report data missing for this job."},
-        )
-
-    try:
-        from report_generator import generate_pdf_report
-    except ImportError:
-        return JSONResponse(
-            status_code=503,
-            content={"message": "PDF report functionality unavailable. Try again later."},
-        )
-
-    try:
-        pdf_bytes = generate_pdf_report(job["report"])
-    except Exception as e:
-        return JSONResponse(
-            status_code=500,
-            content={"message": "Failed to generate PDF", "error": str(e)},
-        )
-
-    filename = f"veridex-report-{job_id}.pdf"
-    headers = {
-        "Content-Disposition": f'attachment; filename="{filename}"'
-    }
-
-    return Response(
-        content=pdf_bytes,
-        media_type="application/pdf",
-        headers=headers
-    )
 
 @app.get("/health")
 def health_check():

@@ -15,6 +15,12 @@ RUN apt-get update \
     libmagic1 \
     ffmpeg \
     libsndfile1 \
+    libpango-1.0-0 \
+    libpangoft2-1.0-0 \
+    libpangocairo-1.0-0 \
+    libgdk-pixbuf-xlib-2.0-0 \
+    libffi-dev \
+    shared-mime-info \
   && rm -rf /var/lib/apt/lists/*
 
 # Set the application working directory

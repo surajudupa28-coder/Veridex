@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VERIDEX Threat Intelligence Report</title>
+  <style>
+    :root {
+      --bg: #0a0c10;
+      --panel: #0d1017;
+      --panel2: #0b0e14;
+      --text: #e8eef9;
+      --muted: #9aa6b2;
+      --dim: #6b7280;
+      --line: #1c2030;
+      --table-line: #333;
+      --heading: #4d9fff;
+      --accent: #ff4757;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Courier New", Courier, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      line-height: 1.45;
+    }
+    .page {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px;
+    }
+    .banner {
+      background: #07090d;
+      border: 1px solid var(--line);
+      padding: 18px 14px;
+      text-align: center;
+      letter-spacing: 0.08em;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .class-strip {
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      background: linear-gradient(90deg, rgba(0,0,0,0.15), rgba(255,255,255,0.03));
+      padding: 10px 12px;
+      font-weight: 700;
+      color: #0a0c10;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+    .class-strip .pill {
+      display: inline-block;
+      padding: 6px 10px;
+      background: var(--accent);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .meta {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      padding: 10px 12px;
+    }
+    .meta .k { color: #cbd5e1; }
+
+    .section {
+      margin-top: 24px;
+      padding-top: 0;
+      page-break-inside: avoid;
+    }
+    .section-title {
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--heading);
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+    .summary {
+      color: #d5dbe7;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 14px 14px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+    .badge b {
+      color: #00cc6a;
+    }
+
+    table.findings {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--table-line);
+      background: #0b0d12;
+    }
+    table.findings th, table.findings td {
+      border: 1px solid var(--table-line);
+      padding: 10px 10px;
+      vertical-align: top;
+      font-size: 12px;
+    }
+    table.findings th {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #cfe0ff;
+      background: #090b10;
+    }
+    table.findings tbody tr:nth-child(odd) td { background: #111; }
+    table.findings tbody tr:nth-child(even) td { background: #0d0d0d; }
+    td.score {
+      white-space: nowrap;
+      color: #e6f0ff;
+      font-weight: 700;
+    }
+
+    ul.ioc {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    ul.ioc li {
+      margin: 8px 0;
+      padding: 10px 10px;
+      border: 1px solid var(--line);
+      background: var(--panel2);
+    }
+    .bullet {
+      color: var(--accent);
+      margin-right: 10px;
+    }
+
+    ol.actions {
+      margin: 0;
+      padding-left: 20px;
+    }
+    ol.actions li {
+      margin: 10px 0;
+      padding: 10px 10px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .muted { color: var(--muted); }
+    .italic { font-style: italic; color: #d5dbe7; }
+    .disclaimer {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid var(--line);
+      margin: 26px 0 12px;
+    }
+    .footer {
+      color: var(--dim);
+      font-size: 12px;
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+        color: #000000;
+      }
+      .page {
+        padding: 24px;
+      }
+      .banner, .meta, .summary, ul.ioc li, ol.actions li, table.findings {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="banner">VERIDEX THREAT INTELLIGENCE REPORT</div>
+    <div class="class-strip"><span class="pill">⬛ CLASSIFICATION: THREAT</span></div>
+    <div class="meta">
+      <div><span class="k">REPORT ID</span>: TEST-001</div>
+      <div><span class="k">GENERATED AT</span>: 2026-04-25</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">EXECUTIVE SUMMARY</div>
+      <div class="summary">This is a test report.</div>
+    </div>
+
+    <div class="section">
+      <div class="badge">CONFIDENCE RATING: <b>N/A</b></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">DETECTION FINDINGS</div>
+      <table class='findings'><thead><tr><th>MODULE</th><th>SCORE</th><th>INTERPRETATION</th></tr></thead><tbody><tr><td>image</td><td class='score'>0.920</td><td>Likely fake</td></tr><tr><td>metadata</td><td class='score'>0.750</td><td>Suspicious</td></tr></tbody></table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">INDICATORS OF COMPROMISE (IOC)</div>
+      <ul class='ioc'><li><span class='bullet'>▶</span> Face mismatch</li><li><span class='bullet'>▶</span> Metadata anomaly</li></ul>
+    </div>
+
+    <div class="section">
+      <div class="section-title">DISSEMINATION ANALYSIS</div>
+      <div class="summary">Simulated spread detected.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">ATTRIBUTION (SPECULATIVE)</div>
+      <div class="summary italic">Possible automated bot network.</div>
+      <div class="disclaimer">⚠ Attribution data is speculative and should not be used as sole basis for operational decisions.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">RECOMMENDED ACTIONS</div>
+      <ol class='actions'><li><b>Flag content</b></li><li><b>Escalate review</b></li></ol>
+    </div>
+
+    <hr />
+    <div class="footer">This report was generated automatically by VERIDEX v1.0. For official use only. Do not distribute without authorization.</div>
+  </div>
+</body>
+</html>

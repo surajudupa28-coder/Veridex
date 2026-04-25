@@ -110,11 +110,11 @@ def _run_ffprobe(file_path: Path) -> Dict[str, Any]:
 
 
 def analyze_metadata(file_path: str) -> Dict[str, Any]:
-    flags: List[str] = []
-    details: Dict[str, Any] = {"file_path": file_path}
-    score = 0.0
-
     try:
+        flags: List[str] = []
+        details: Dict[str, Any] = {"file_path": file_path}
+        score = 0.0
+
         path = Path(file_path)
         extension = path.suffix.lower()
         details["extension"] = extension
@@ -132,7 +132,13 @@ def analyze_metadata(file_path: str) -> Dict[str, Any]:
             metadata_present = len(exif_tags) > 0
 
             if not exif_tags:
-                flags.append("missing_exif")
+                return {
+                    "score": 0.0,
+                    "flags": ["no_exif_data"],
+                    "method": "exif_analysis",
+                    "metadata": {},
+                    "manipulation_score": 0.0,
+                }
 
             software_tag = exif_tags.get("Image Software")
             if software_tag:
@@ -232,6 +238,7 @@ def analyze_metadata(file_path: str) -> Dict[str, Any]:
             return {
                 "score": 0.0,
                 "flags": ["unsupported_format"],
+                "method": "exif_analysis",
                 "metadata_present": False,
                 "details": {"file_path": file_path, "extension": extension},
             }
@@ -251,13 +258,16 @@ def analyze_metadata(file_path: str) -> Dict[str, Any]:
         return {
             "score": round(score, 2),
             "flags": list(dict.fromkeys(flags)),
+            "method": "exif_analysis",
             "metadata_present": metadata_present,
             "details": details,
         }
-    except Exception as exc:
+    except Exception as e:
+        print(f"[metadata_detector] Error: {e}")
         return {
             "score": 0.0,
-            "flags": ["metadata_analysis_error"],
-            "metadata_present": False,
-            "details": {"file_path": file_path, "error": str(exc)},
+            "flags": ["metadata_error"],
+            "method": "exif_analysis",
+            "metadata": {},
+            "manipulation_score": 0.0,
         }

@@ -40,6 +40,7 @@ exifread==3.0.0
 
 # PDF report generation
 reportlab==4.1.0
+weasyprint
 
 # Disinformation / relationship graph utilities
 networkx==3.2.1
