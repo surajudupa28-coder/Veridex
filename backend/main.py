@@ -17,6 +17,7 @@ from fastapi import FastAPI, UploadFile, File, BackgroundTasks, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response, JSONResponse
 from graph.disinfo_graph import build_disinfo_graph
+from report_generator import generate_threat_report
 
 import aiofiles
 
@@ -83,6 +84,7 @@ async def run_full_analysis(job_id: str, file_path: str, file_ext: str):
 
         jobs[job_id]["status"] = "completed"
         jobs[job_id]["report"] = result
+        jobs[job_id]["threat_report"] = generate_threat_report(result)   
         jobs[job_id]["completed_at"] = time.time()
         jobs[job_id].pop("progress", None)
     except Exception as e:
@@ -126,6 +128,7 @@ async def analyze(
         "filename": file.filename,
         "file_path": str(outfile_path),
         "created_at": time.time(),
+        "threat_report": None,   
     }
 
     background_tasks.add_task(run_full_analysis, temp_id, str(outfile_path), ext)
@@ -174,7 +177,10 @@ def get_report(job_id: str):
             status_code=500,
             content={"message": "Report unavailable despite completion.", "status": job["status"]}
         )
-    return job["report"]
+    return {
+    "report": job["report"],
+    "threat_report": job.get("threat_report")
+    }
 
 
 @app.get("/report/{job_id}/pdf")
