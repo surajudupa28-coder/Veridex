@@ -1,10 +1,17 @@
 FROM python:3.11-slim
 
+# -----------------------------
+# ENV SETTINGS (better defaults)
+# -----------------------------
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-# System dependencies for OpenCV (headless), audio processing, and file-type detection
-# - libgl1/libglib2.0-0/libsm6/libxrender1/libxext6: OpenCV runtime deps
-# - libmagic1: python-magic backend
-# - ffmpeg/libsndfile1: audio decoding + soundfile/librosa support
+# Set working directory early
+WORKDIR /app
+
+# -----------------------------
+# SYSTEM DEPENDENCIES
+# -----------------------------
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     libgl1 \
@@ -21,25 +28,39 @@ RUN apt-get update \
     libgdk-pixbuf-xlib-2.0-0 \
     libffi-dev \
     shared-mime-info \
+    gcc \
+    g++ \
   && rm -rf /var/lib/apt/lists/*
 
-# Set the application working directory
-WORKDIR /app
-
-# Install Python dependencies first (better layer caching)
+# -----------------------------
+# PYTHON DEPENDENCIES
+# -----------------------------
 COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
 
-# Cache HuggingFace + Torch models under a mountable directory
+# Upgrade pip (important for mediapipe + wheels)
+RUN pip install --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
+# -----------------------------
+# MODEL CACHE (HuggingFace / Torch)
+# -----------------------------
 ENV HF_HOME=/app/models
 ENV TORCH_HOME=/app/models
 
-# Copy the rest of the application code
+# Create model cache dir (prevents runtime issues)
+RUN mkdir -p /app/models
+
+# -----------------------------
+# APP CODE
+# -----------------------------
 COPY . .
 
-# FastAPI default port
+# -----------------------------
+# PORT
+# -----------------------------
 EXPOSE 8000
 
-# Start the API server
+# -----------------------------
+# START SERVER
+# -----------------------------
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
-

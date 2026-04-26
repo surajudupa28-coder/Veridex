@@ -11,6 +11,7 @@ See: / for listing all endpoints.
 import uuid
 import time
 import os
+import logging
 from pathlib import Path
 from typing import Dict, Any, Optional
 from fastapi import FastAPI, UploadFile, File, BackgroundTasks, HTTPException
@@ -26,11 +27,14 @@ from detectors.image_detector import analyze_image
 from detectors.video_detector import analyze_video
 from detectors.audio_detector import analyze_audio
 from detectors.metadata_detector import analyze_metadata
+from detectors.lip_sync_checker import check_lip_sync
 from ensemble import (
     aggregate_image_result,
     aggregate_video_result,
     build_threat_summary,
 )
+
+logger = logging.getLogger(__name__)
 
 # --- CONSTANTS ---
 DATA_DIR = Path("/data")
@@ -67,6 +71,12 @@ async def run_full_analysis(job_id: str, file_path: str, file_ext: str):
             img_res = analyze_image(file_path)
             metadata_res = analyze_metadata(file_path)
             agg = aggregate_image_result(img_res, metadata_res)
+            agg.setdefault("flags", [])
+            agg["lip_sync"] = {
+                "sync_score": None,
+                "flags": [],
+                "method": "skipped_not_video"
+            }
             agg["threat_summary"] = build_threat_summary(agg)
             result = agg
 
@@ -77,6 +87,25 @@ async def run_full_analysis(job_id: str, file_path: str, file_ext: str):
             audio_res = analyze_audio(file_path)
             metadata_res = analyze_metadata(file_path)
             agg = aggregate_video_result(vid_res, audio_res, metadata_res)
+            agg["audio"] = audio_res
+            agg.setdefault("flags", [])
+            agg["flags"].extend(audio_res.get("flags", []))
+            jobs[job_id]["progress"] = "checking lip sync"
+            start = time.time()
+            try:
+                lip_sync_result = check_lip_sync(file_path)
+            except Exception as e:
+                lip_sync_result = {
+                    "sync_score": 0.5,
+                    "flags": ["lip_sync_runtime_error"],
+                    "method": "mediapipe+librosa",
+                    "error": str(e)
+                }
+
+            agg["lip_sync"] = lip_sync_result
+            agg["flags"].extend(lip_sync_result.get("flags", []))
+
+            logger.info(f"Lip sync executed for {file_path} in {time.time() - start:.2f}s")
             agg["threat_summary"] = build_threat_summary(agg)
             result = agg
 
