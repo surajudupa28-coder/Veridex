@@ -1,9 +1,14 @@
 # Frontend
 frontend/node_modules/
 frontend/dist/
+node_modules/
+dist/
 
 # Backend
 backend/.venv/
+backend/.venv311/
+.venv/
+.venv311/
 backend/__pycache__/
 backend/.pytest_cache/
 *.pyc
@@ -11,6 +16,9 @@ backend/.pytest_cache/
 # Data uploads (keep folder)
 data/uploads/*
 !data/uploads/.gitkeep
+
+# Keep empty placeholder files tracked if present
+!.gitkeep
 
 # OS/editor
 .DS_Store
@@ -20,9 +28,7 @@ Thumbs.db
 # Python venv (your actual folder)
 venv/
 
-# Models (VERY IMPORTANT)
-*.pth
-models/
+# Models are tracked via Git LFS (.gitattributes)
 
 # Images and media in data dir
 data/*.png
@@ -52,7 +58,6 @@ data/*.webp
 *.pdf
 
 # HuggingFace model cache (can be huge)
-backend/models/
 .cache/
 
 
@@ -60,6 +65,8 @@ backend/models/
 *.egg-info/
 dist/
 build/
+__pycache__/
+.pytest_cache/
 
 # Veridex generated pipeline artifacts
 backend/dataset/
@@ -72,11 +79,7 @@ backend/report/*.json
 backend/report/*.png
 backend/report/*.html
 
-# Large model binaries
-backend/models/*.h5
-backend/models/*.pth
-backend/models/*.pt
-backend/models/*.pkl
+# Large model binaries are tracked via Git LFS
 
 # Local test assets
 backend/test_fake.png

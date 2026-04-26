@@ -35,7 +35,7 @@ def aggregate_image_result(image_result: Dict[str, Any], metadata_result: Dict[s
     image_result = image_result or {"score": 0.0, "flags": [], "method": "unknown"}
     metadata_result = metadata_result or {"score": 0.0, "flags": [], "method": "exif"}
 
-    neural_score = image_result.get("raw_scores", {}).get("face_score", 0.5) / 100
+    neural_score = image_result.get("raw_scores", {}).get("face_score", 0.5)
     gan_score = image_result.get("raw_scores", {}).get("gan_score", 0.0)
     metadata_score = metadata_result.get("score", 0.0)
 

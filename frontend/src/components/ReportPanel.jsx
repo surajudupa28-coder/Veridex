@@ -86,7 +86,8 @@ function ReportPanel({ jobId, confidence }) {
         return res.json();
       })
       .then((data) => {
-        setReportData(data);
+        const resolvedThreatReport = data?.threat_report ?? data;
+        setReportData(resolvedThreatReport);
         setLoading(false);
       })
       .catch((err) => {

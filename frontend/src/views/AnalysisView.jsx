@@ -47,7 +47,7 @@ function AnalysisView({ fetchGraph }) {
       try {
         const reportJson = await getJobReport(jobId);
         if (isAlive) {
-          setReportData(reportJson);
+          setReportData(reportJson?.report ?? null);
           if (fetchGraph) {                 // ✅ ADD THIS BLOCK
             fetchGraph(jobId);
           }
@@ -239,7 +239,9 @@ function AnalysisView({ fetchGraph }) {
         padding: "20px",
       }}
     >
-      <h1 style={{ margin: 0, fontSize: "24px", color: "var(--green)" }}>Analyzing: {activeJob?.filename ?? "Unknown file"}</h1>
+      <h1 style={{ margin: 0, fontSize: "24px", color: "var(--green)" }}>
+        Analyzing: {activeJob?.filename ?? activeJob?.fileName ?? "Unknown file"}
+      </h1>
       <p
         style={{
           marginTop: "10px",

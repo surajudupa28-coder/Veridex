@@ -71,10 +71,17 @@ function ResultsPanel({ reportData }) {
   const componentScores = reportData?.component_scores ?? {};
   const fileType = reportData?.file_type ?? "image";
 
+  const componentKeyByCard = {
+    neural: "neural_score",
+    gan: "gan_score",
+    audio: "audio_score",
+    metadata: "metadata_score",
+  };
+
   const scoreCards = useMemo(
     () =>
       SCORE_CARDS.map((card) => {
-        const rawScore = componentScores[card.key];
+        const rawScore = componentScores[componentKeyByCard[card.key]];
         const numericScore = typeof rawScore === "number" ? rawScore : null;
         const isAudioUnavailable = card.key === "audio" && fileType === "image";
         const isMissing = numericScore === null || Number.isNaN(numericScore);
